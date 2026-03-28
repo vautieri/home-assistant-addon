@@ -1,27 +1,28 @@
-Music Assistant
-==================================
+# Home Assistant Addon Repository (Patched)
 
-**Music Assistant**
+Custom HA addon repository with patched versions of addons.
 
-This is the Home Assistant add-on repository for Music Assistant for a convenient way to run the [Music Assistant Server](https://github.com/music-assistant/server)
+## Addons
 
-Music Assistant is a music library manager for your offline and online music sources, combined with the power of Home Assistant to easily stream your favourite music to a wide range of supported players.
+### Music Assistant (Patched)
+Official Music Assistant with YouTube Music no-premium patches baked in.
 
-**Documentation:** https://music-assistant.io/
-
-For issues, please go to [the issue tracker](https://github.com/music-assistant/hass-music-assistant/issues).
-
-For feature requests, please see [feature requests](https://github.com/music-assistant/hass-music-assistant/discussions/categories/feature-requests-and-ideas).
-
+**Patches:**
+1. Bypass Premium check
+2. Widen format selector (bestaudio/best)
+3. Add fallback player clients (mweb, android_music)
 
 ## Installation
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmusic-assistant%2Fhome-assistant-addon)
+1. In Home Assistant, go to **Settings → Add-ons → Add-on Store**
+2. Click the three dots (top right) → **Repositories**
+3. Add: `https://github.com/vautieri/home-assistant-addon`
+4. Install **Music Assistant (Patched)**
 
+## Updating
 
-If you want to do add the repository manually, please follow the procedure highlighted in the [Home Assistant website](https://home-assistant.io/hassio/installing_third_party_addons). Use the following URL to add this repository: https://github.com/music-assistant/home-assistant-addon
-
-
-
-[repository-badge]: https://img.shields.io/badge/Add%20repository%20to%20my-Home%20Assistant-41BDF5?logo=home-assistant&style=for-the-badge
-[repository-url]: https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmusic-assistant%2Fhome-assistant-addon
+When a new MA version releases:
+1. Update `BASE_VERSION` in `music_assistant_patched/Dockerfile` and `build.yaml`
+2. Update `version` in `config.yaml`
+3. Push to main → GitHub Action builds the new image
+4. Update the addon in HA

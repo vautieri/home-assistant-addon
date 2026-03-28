@@ -1,0 +1,5 @@
+build_from:
+  amd64: ghcr.io/music-assistant/server:2.8.1
+  aarch64: ghcr.io/music-assistant/server:2.8.1
+args:
+  BASE_VERSION: 2.8.1

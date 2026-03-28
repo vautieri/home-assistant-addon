@@ -1,0 +1,43 @@
+name: Music Assistant (Patched)
+version: 2.8.1-patched
+slug: music_assistant_patched
+description:
+  Music Assistant server with YouTube Music no-premium patches.
+  Based on official Music Assistant with 3 patches for YTMusic playback without Premium.
+url: https://github.com/vautieri/home-assistant-addon
+arch:
+  - amd64
+  - aarch64
+homeassistant_api: true
+discovery:
+  - music_assistant
+auth_api: true
+host_network: true
+ingress: true
+ingress_port: 8094
+panel_icon: mdi:bookshelf
+panel_title: Music Assistant
+panel_admin: false
+uart: false
+apparmor: true
+map:
+  - media:rw
+  - ssl:ro
+init: false
+advanced: false
+backup_exclude:
+  - cache.db
+  - collage_images/*
+  - .cache/*
+stage: stable
+image: ghcr.io/vautieri/music-assistant-patched
+tmpfs: true
+options:
+  log_level: info
+  safe_mode: false
+schema:
+  log_level: list(debug|info|warning|error)
+  safe_mode: bool
+privileged:
+  - SYS_ADMIN
+  - DAC_READ_SEARCH
