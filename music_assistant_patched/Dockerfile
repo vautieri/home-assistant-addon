@@ -2,7 +2,7 @@
 #
 # Patched Music Assistant: Official image + YouTube Music no-premium patches
 #
-ARG BASE_VERSION=2.8.1
+ARG BASE_VERSION=2.8.3
 FROM ghcr.io/music-assistant/server:${BASE_VERSION}
 
 # Apply YouTube Music patches

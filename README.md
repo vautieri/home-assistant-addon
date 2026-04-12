@@ -2,7 +2,7 @@
 
 Custom HA addon repository with patched versions of addons.
 
-## Addons
+This is the Home Assistant App repository for Music Assistant for a convenient way to run the [Music Assistant Server](https://github.com/music-assistant/server)
 
 ### Music Assistant (Patched)
 Official Music Assistant with YouTube Music no-premium patches baked in.
@@ -26,3 +26,6 @@ When a new MA version releases:
 2. Update `version` in `config.yaml`
 3. Push to main → GitHub Action builds the new image
 4. Update the addon in HA
+
+[repository-badge]: https://img.shields.io/badge/Add%20repository%20to%20my-Home%20Assistant-41BDF5?logo=home-assistant&style=for-the-badge
+[repository-url]: https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmusic-assistant%2Fhome-assistant-addon
