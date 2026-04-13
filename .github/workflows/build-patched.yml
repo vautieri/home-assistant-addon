@@ -1,3 +1,23 @@
+# =============================================================================
+# HOW TO UPDATE WHEN MERGING UPSTREAM
+# =============================================================================
+# 1. Sync fork:  git fetch upstream && git merge upstream/main
+# 2. Check the new upstream stable version in music_assistant/config.yaml
+# 3. Update these 3 files in music_assistant_patched/ with the new version:
+#      - build.yaml   (build_from + args.BASE_VERSION)
+#      - config.yaml  (version field)
+#      - Dockerfile   (ARG BASE_VERSION default)
+# 4. Push to main — the workflow reads the version from build.yaml automatically.
+#    Tags and build-args are derived from build.yaml, NOT hardcoded here.
+# 5. After push, verify the GitHub Actions run succeeds and the correct
+#    version tag appears on ghcr.io/vautieri/music-assistant-patched
+# 6. In HA, go to Settings > Add-ons > Music Assistant (Patched) > Update
+#
+# NOTE: The Dockerfile patches target specific strings in the ytmusic provider.
+# After a major MA version bump, verify the sed patterns still match by checking:
+#   music_assistant/providers/ytmusic/__init__.py in the upstream server repo.
+# =============================================================================
+
 name: Build Patched Music Assistant
 
 on:
@@ -8,9 +28,9 @@ on:
   workflow_dispatch:
     inputs:
       base_version:
-        description: 'Base MA version to patch'
-        required: true
-        default: '2.8.1'
+        description: 'Override version (leave empty to read from build.yaml)'
+        required: false
+        default: ''
 
 env:
   REGISTRY: ghcr.io
@@ -25,6 +45,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Read version from build.yaml so we never have a hardcoded fallback.
+      # Manual workflow_dispatch input overrides if provided.
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.base_version }}" ]; then
+            echo "value=${{ github.event.inputs.base_version }}" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(grep 'BASE_VERSION:' music_assistant_patched/build.yaml | awk '{print $2}')
+            echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Using version: $(grep 'value=' "$GITHUB_OUTPUT" | cut -d= -f2)"
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -32,29 +65,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push (amd64)
+      # Single multi-platform build creates a proper manifest so HA pulls
+      # the correct arch automatically from one tag.
+      - name: Build and push (multi-arch)
         uses: docker/build-push-action@v5
         with:
           context: music_assistant_patched
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.base_version || '2.8.1' }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.value }}
           build-args: |
-            BASE_VERSION=${{ github.event.inputs.base_version || '2.8.1' }}
-
-      - name: Build and push (aarch64)
-        uses: docker/build-push-action@v5
-        with:
-          context: music_assistant_patched
-          platforms: linux/arm64
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-aarch64
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.base_version || '2.8.1' }}-aarch64
-          build-args: |
-            BASE_VERSION=${{ github.event.inputs.base_version || '2.8.1' }}
+            BASE_VERSION=${{ steps.version.outputs.value }}

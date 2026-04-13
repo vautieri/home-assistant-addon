@@ -1,5 +1,13 @@
+# =============================================================================
+# HOW TO UPDATE WHEN MERGING UPSTREAM
+# =============================================================================
+# This is the SINGLE SOURCE OF TRUTH for the patched addon version.
+# The GitHub Actions workflow reads BASE_VERSION from this file.
+# 1. Change the version number in build_from (both arches) and args.BASE_VERSION
+# 2. Use the same version in config.yaml and Dockerfile ARG default
+# =============================================================================
 build_from:
-  amd64: ghcr.io/music-assistant/server:2.8.3
-  aarch64: ghcr.io/music-assistant/server:2.8.3
+  amd64: ghcr.io/music-assistant/server:2.8.4
+  aarch64: ghcr.io/music-assistant/server:2.8.4
 args:
-  BASE_VERSION: 2.8.3
+  BASE_VERSION: 2.8.4

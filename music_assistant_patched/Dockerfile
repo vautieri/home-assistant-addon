@@ -2,7 +2,16 @@
 #
 # Patched Music Assistant: Official image + YouTube Music no-premium patches
 #
-ARG BASE_VERSION=2.8.3
+# =============================================================================
+# HOW TO UPDATE WHEN MERGING UPSTREAM
+# =============================================================================
+# 1. Bump BASE_VERSION default below to match build.yaml
+# 2. Verify the sed patterns still match the upstream ytmusic provider code:
+#    https://github.com/music-assistant/server/blob/main/music_assistant/providers/ytmusic/__init__.py
+# 3. If upstream changed the target strings, update the sed commands accordingly
+# 4. The "Verify patches applied" check will fail the build if Patch 1 no longer matches
+# =============================================================================
+ARG BASE_VERSION=2.8.4
 FROM ghcr.io/music-assistant/server:${BASE_VERSION}
 
 # Apply YouTube Music patches
