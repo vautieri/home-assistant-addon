@@ -11,13 +11,13 @@
 # 3. If upstream changed the target strings, update the sed commands accordingly
 # 4. The "Verify patches applied" check will fail the build if Patch 1 no longer matches
 # =============================================================================
-ARG BASE_VERSION=2.8.4
+ARG BASE_VERSION=2.9.5
 FROM ghcr.io/music-assistant/server:${BASE_VERSION}
 
 # Apply YouTube Music patches
-RUN YTMUSIC_INIT="/app/venv/lib/python3.13/site-packages/music_assistant/providers/ytmusic/__init__.py" && \
+RUN YTMUSIC_INIT="$(ls /app/venv/lib/python3.*/site-packages/music_assistant/providers/ytmusic/__init__.py)" && \
     # Patch 1: Bypass Premium check
-    sed -i 's/return stream_format\["format_id"\] == "141"/return True  # Patched: skip premium check/' "$YTMUSIC_INIT" && \
+    sed -i 's/return format_id == "141"/return True  # Patched: skip premium check/' "$YTMUSIC_INIT" && \
     # Patch 2: Widen format selector
     sed -i 's/"m4a\/bestaudio"/"bestaudio\/best"/' "$YTMUSIC_INIT" && \
     # Patch 3: Add fallback player clients
