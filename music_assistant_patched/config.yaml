@@ -7,7 +7,7 @@
 # 4. Also update build.yaml and Dockerfile with the same version
 # =============================================================================
 name: Music Assistant (Patched)
-version: 2.9.5
+version: 2.9.5.1
 slug: music_assistant_patched
 description:
   Music Assistant server with YouTube Music no-premium patches.
