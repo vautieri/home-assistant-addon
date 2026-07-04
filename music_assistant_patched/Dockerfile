@@ -21,6 +21,6 @@ RUN YTMUSIC_INIT="$(ls /app/venv/lib/python3.*/site-packages/music_assistant/pro
     # Patch 2: Widen format selector
     sed -i 's/"m4a\/bestaudio"/"bestaudio\/best"/' "$YTMUSIC_INIT" && \
     # Patch 3: Add fallback player clients
-    sed -i 's/"player_client": \["web_music"\]/"player_client": ["web_music", "mweb", "android_music"]/' "$YTMUSIC_INIT" && \
+    sed -i 's/"player_client": \["web_music"\]/"player_client": ["web_music", "mweb"]/' "$YTMUSIC_INIT" && \
     # Verify patches applied
     grep -q 'skip premium check' "$YTMUSIC_INIT" && echo "Patches applied successfully" || exit 1
