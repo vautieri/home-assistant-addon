@@ -47,16 +47,17 @@ jobs:
 
       # Read version from build.yaml so we never have a hardcoded fallback.
       # Manual workflow_dispatch input overrides if provided.
-      - name: Determine version
+      # base = upstream MA image tag (FROM); tag = addon revision (what HA pulls).
+      # Decoupled so patch-only fixes can ship without an upstream version bump.
+      - name: Determine versions
         id: version
         run: |
-          if [ -n "${{ github.event.inputs.base_version }}" ]; then
-            echo "value=${{ github.event.inputs.base_version }}" >> "$GITHUB_OUTPUT"
-          else
-            VERSION=$(grep 'BASE_VERSION:' music_assistant_patched/build.yaml | awk '{print $2}')
-            echo "value=$VERSION" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Using version: $(grep 'value=' "$GITHUB_OUTPUT" | cut -d= -f2)"
+          BASE=$(grep 'BASE_VERSION:' music_assistant_patched/build.yaml | awk '{print $2}')
+          TAG=$(grep '^version:' music_assistant_patched/config.yaml | awk '{print $2}')
+          if [ -n "${{ github.event.inputs.base_version }}" ]; then BASE="${{ github.event.inputs.base_version }}"; fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "BASE=$BASE  TAG=$TAG"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -81,6 +82,6 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.value }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.tag }}
           build-args: |
-            BASE_VERSION=${{ steps.version.outputs.value }}
+            BASE_VERSION=${{ steps.version.outputs.base }}
